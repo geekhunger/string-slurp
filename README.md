@@ -10,7 +10,11 @@ Imagine doing this...
 ....`
 ```
 
-If you write the value of `multiline_text` into a file, you'll notice many unwanted newline (\n) and tab (\t) characters! The build-in `String.trim()` method wouldn't help here, because it only removes leading and trailing spaces but not the unwanted tabs before every line. This package flattens multiline strings in more predictable ways.
+If you write the value of `multiline_text` into a file, you'll notice many unwanted newline (\n) and tab (\t) characters! The build-in `String.trim()` method wouldn't help here, because it only removes leading and trailing spaces but not the unwanted tabs before every line.
+
+This package flattens multiline strings in more predictable ways.
+
+Basically it takes a multiline string (or an array of strings), splits it into paragraphs (therefore removing all newline characters), then loops through each paragraph finding the common line indentation (\t) and removing it (also removing trailing line spaces). Finally it joins the paragraphs back into a single string and separating them by the given line joiner (for example \n or \n\n).
 
 ## Install
 
