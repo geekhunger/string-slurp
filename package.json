@@ -1,0 +1,28 @@
+{
+    "private": false,
+    "type": "module",
+    "version": "1.0.0",
+    "name": "fopsy",
+    "description": "Trim spaces in multiline strings",
+    "author": "geekhunger <hello@geekhunger.com>",
+    "license": "MIT",
+    "main": "index.js",
+    "homepage": "https://github.com/geekhunger/string-slurp#readme",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/geekhunger/string-slurp.git"
+    },
+    "bugs": {
+        "url": "https://github.com/geekhunger/string-slurp/issues"
+    },
+    "keywords": [
+        "string",
+        "multiline",
+        "trim",
+        "slurp",
+        "whitespace"
+    ],
+    "dependencies": {
+        "type-approve": "^3.1.0"
+    }
+}
