@@ -1,7 +1,7 @@
-import {assert, type} from "type-approve"
+import {assert, type, validate} from "type-approve"
 
 export const strim = function(text, line_joiner = "\n") {
-    assert(type({array: text}, {string: text}), "Argument must be a string or an array of strings!")
+    assert(type({string: text}) || (type({array: text}) && text.every(validate("string"))), "Argument must be a string or an array of strings!")
 
     const tabulator_length = 4 // equal count of whitespaces
     const whitespace_slurp_pattern = /[\u0020\u00a0\u2000-\u2009\u200a\u200b]/g
