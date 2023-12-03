@@ -1,46 +1,68 @@
-import {assert, type, validate} from "type-approve"
+import {assert, type} from "type-approve"
 
-export const strim = function(text, line_joiner = "\n") {
-    assert(type({string: text}) || (type({array: text}) && text.every(validate("string"))), "Argument must be a string or an array of strings!")
 
-    const tabulator_length = 4 // equal count of whitespaces
-    const whitespace_slurp_pattern = /[\u0020\u00a0\u2000-\u2009\u200a\u200b]/g
-    const tabulator_swap_pattern = new RegExp(`${whitespace_slurp_pattern.source}{${tabulator_length},${tabulator_length}}`, "g")
-    const linebreak_pattern = /[\r\n\f\v\u2028-\u3000]+/
+const ENDOFLINE = /[\r\n\f\v\u2028-\u3000]/u
+const WHITESPACE = /[\u0020\u00a0\u2000-\u2009\u200a\u200b]/u
+const TABULATOR_LENGTH = 4 // count of whitespaces for one tabulator
 
-    if(!type({array: text})) {
-        if(!type({string: text})) {
-            return text // can not handle anything other that strings
-        }
-        text = text.split(linebreak_pattern) // split (and flatten) by line vertical and horizontal line breaking characters
-    } else {
-        if(!text.every(paragraph => type({string: paragraph}))) {
-            return text // can not handle because array contains other types than strings
-        }
-        text = text.map(paragraph => strim(paragraph))
-    }
 
-    text = text
-        .filter(line => line.trim().length > 0) // discard empty lines
-        .map(line => line
-            .replace(whitespace_slurp_pattern, " ") // flatten all kinds of breakable and non-breakable whitespace characters
-            .replace(tabulator_swap_pattern, "\t") // substitute whitespaces with tabulators
-        )
-
-    let leading_spaces = [] // collect prefixed spaces lengths to calculate the common space length over all lines of text
-    for(const line of text) {
-        const count = line.match(/^\s+/)?.[0]?.length || 0
-        leading_spaces.push(count)
-    }
-
-    const common_leader = Math.min(...leading_spaces)
-
-    return text
-        .map(line => line
-            .slice(common_leader)
-            .trimEnd()
-        )
-        .join(line_joiner)
+const normalizeLinebreaks = function(text) {
+    assert(type({string: text}), "Could not normalize end-of-line characters! Value must be a string.")
+    return text.replace(ENDOFLINE, "\n")
 }
+
+
+const normalizeTabulators = function(text) {
+    assert(type({string: text}), "Could not normalize tabulator characters! Value must be a string.")
+    const pattern = new RegExp(`${WHITESPACE.source}{${TABULATOR_LENGTH},${TABULATOR_LENGTH}}`, "gu")
+    return text.replace(pattern, "\t")
+}
+
+
+const findCommonSpacesLeader = function(text) {
+    assert(type({string: text}), "Could not find common space leader! Value must be a string.")
+
+    let leader
+
+    for(let line of text.split(ENDOFLINE).filter(Boolean)) {
+        const sequence = line.match(/^\s+/)?.[0] || ""
+        if(sequence.length < 1) {
+            leader = "" // reset
+            break
+        }
+        if(!leader || (sequence.length < leader.length && sequence !== leader)) {
+            leader = sequence
+        }
+    }
+
+    return leader
+}
+
+
+const removeLeadingSpaces = function(text) {
+    const content = normalizeLinebreaks(text)
+    const indentation = findCommonSpacesLeader(content)
+    const prefix = new RegExp(`^${indentation}`)
+
+    return content
+        .split(ENDOFLINE)
+        .map(line => line.replace(prefix, "").trimEnd())
+        .join("\n")
+}
+
+
+export const strim = function(text, oneliner = false) {
+    assert(type({string: text}), "Could not normalize spaces! Value must be a string.")
+    const content = normalizeTabulators(removeLeadingSpaces(text)).trim()
+    if(oneliner === true) {
+        return content
+            .split("\n")
+            .filter(Boolean)
+            .map(line => line.trim())
+            .join(" \\\n")
+    }
+    return content
+}
+
 
 export default strim
