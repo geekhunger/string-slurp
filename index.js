@@ -22,20 +22,14 @@ const normalizeTabulators = function(text) {
 const findCommonSpacesLeader = function(text) {
     assert(type({string: text}), "Could not find common space leader! Value must be a string.")
 
-    let leader
+    let leaders = []
 
-    for(let line of text.split(ENDOFLINE).filter(Boolean)) {
+    for(let line of text.split(ENDOFLINE).filter(line => line.trim().length > 0)) {
         const sequence = line.match(/^\s+/)?.[0] || ""
-        if(sequence.length < 1) {
-            leader = "" // reset
-            break
-        }
-        if(!leader || (sequence.length < leader.length && sequence !== leader)) {
-            leader = sequence
-        }
+        leaders.push(sequence)
     }
 
-    return leader
+    return [...new Set(leaders)].sort((a, b) => a.length - b.length)[0] // ascending order
 }
 
 
