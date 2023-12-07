@@ -1,7 +1,7 @@
 {
     "private": false,
     "type": "module",
-    "version": "2.1.0",
+    "version": "2.2.0",
     "name": "string-slurp",
     "description": "Trim spaces in multiline strings",
     "author": "geekhunger <hello@geekhunger.com>",
@@ -23,6 +23,6 @@
         "whitespace"
     ],
     "dependencies": {
-        "type-approve": "^3.1.1"
+        "type-approve": "^4.0.0"
     }
 }
